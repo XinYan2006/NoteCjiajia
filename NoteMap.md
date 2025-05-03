@@ -1,5 +1,5 @@
 # std::map 
-> std::map属于关联容器，会存储键值对，并且按照键的顺序自动对元素排序。属于红黑树
+> std::map属于关联容器，会存储键值对，并且按照键的顺序**自动对元素排序**。属于红黑树。
 ## 1.头文件 
 ```C++
 #include <map>
@@ -15,7 +15,7 @@ map<string,int> myMap;
 ### 方法一 使用 [] 运算符
 若键不存在，会**创建新的**键值对；若键已存在，则会**更新**对应的值。
 ```C++
-myMap["apple"]=1
+myMap["apple"]=1;
 ```
 ### 方法二 使用 insert 和 make_pair
 插入新的键值对，若键已存在，插入操作会被**忽略**
@@ -39,6 +39,7 @@ cout<<"Value of apple:"<<myMap["apple"]<<endl;
 ### 方法二 使用 at() 方法
 at()会检查键是否存在，若不存在，会抛出**out_of_range异常**
 ```C++
+#include <stdexcept> // 包含out_of_range异常类
 try{
     cout<<"Value of orange:"<<myMap.at("orange")<<endl;
 }catch(const out_of_range& e){
@@ -47,7 +48,7 @@ try{
 ```
 ## 5.元素遍历
 ### 方法一 使用迭代器遍历
-auto it是myMap的指针，string类是first，int类是secoond
+auto it是myMap的迭代器(超级指针)，string类是first，int类是second
 ```C++
 for(auto it=myMap.begin(); it!=myMap.end(); ++it)
 {
@@ -93,7 +94,10 @@ cout<<"Is the map empty?"<< (myMap.empty()?"Yes":"No") <<endl;
 ### map比较模板参数
 不指定Compare参数，默认使用less<key>。
 这意味着map会使用**键类型的<运算符**来比较键的大小，并按照升序排列元素
->什么时候调用这个比较函数？
+>**什么时候调用这个比较函数？**
+>- 插入元素时：map需要根据比较函数来确定新元素在红黑树中的位置，以保证元素按照键的顺序排列。
+>- 查找元素时：比较函数用于在红黑树中进行二分查找，以快速定位元素的位置。
+>- 删除元素时：比较函数也可能用于调整红黑树的结构，以保证树的平衡性和元素的顺序。
 ```C++
 map<string, int> myMap;
 myMap["apple"] = 1;
@@ -105,7 +109,7 @@ for (const auto& pair : myMap) {
 ```
 在这个例子中,map会根据字符串的字典序进行排序
 ### 自定义比较函数
->为什么需要自定义比较函数?
+>**为什么需要自定义比较函数?**
 >答：在某些情况下，默认的比较规则(less)可能无法满足要求。
 #### 示例一 按照字符串长度降序排序
 ```C++
@@ -144,7 +148,7 @@ struct Person
 //自定义比较函数对象，按照年龄升序排序
 struct CompareByAge{
     //自定义比较函数，重载()运算符，用于比较两个Person对象的age成员
-    bool operate()(const Person& a,const Person& b)const{
+    bool operator()(const Person& a,const Person& b)const{
         return a.age < b.age;
     }
 };
